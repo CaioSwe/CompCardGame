@@ -1,0 +1,26 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../Bibliotecas"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"delimiters.h": "c",
+			"stdio.h": "c",
+			"textobject.h": "c",
+			"direct.h": "c",
+			"utils.h": "c",
+			"time.h": "c",
+			"imageobject.h": "c",
+			"gif.h": "c",
+			"lista.h": "c",
+			"math.h": "c",
+			"button.h": "c",
+			"typeinfo": "c"
+		}
+	}
+}
