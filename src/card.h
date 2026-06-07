@@ -16,6 +16,8 @@ Card Card_Init(Rectangle rect, Texture2D txr);
 
 Rectangle Card_GetRect(Card card);
 
+int Card_GetId(Card card);
+
 bool Card_isHovered(Card card, Vector2 point);
 
 bool Card_isGrabbed(Card card, bool isDown);

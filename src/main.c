@@ -14,7 +14,35 @@
 
 #pragma region "FuncoesUteis"
 
+typedef struct Essentials{
+    float deltaTime;
+    Vector2 mousePos;
+    Vector2 mouseDelta;
+} Essentials;
 
+static void percorrerCartas(Card c, Item extra){
+    Essentials* e = (Essentials*)extra;
+
+    static int grabbedCardId = -1;
+    int id = Card_GetId(c);
+
+    bool mbDown = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
+    if(!mbDown && grabbedCardId == id) grabbedCardId = -1;
+    
+    bool hovered = Card_isHovered(c, e->mousePos);
+    bool canGrab = (grabbedCardId == -1 || grabbedCardId == id);
+    bool isDragging = Card_isGrabbed(c, mbDown) && canGrab;
+
+    if(isDragging){
+        grabbedCardId = id;
+
+        Card_Move(c, e->mouseDelta);
+        Card_Maximize(c, 0.5f);
+    }
+    else if(grabbedCardId != id) Card_Minimize(c, 0.5f);
+
+    Card_Update(c, e->deltaTime);
+}
 
 #pragma endregion "FuncoesUteis"
 
@@ -61,26 +89,35 @@ int main(){
     float centerY = CENTER.y - height/2;
     Rectangle centerCardPos = (Rectangle){centerX, centerY, width, height};
     
+    Rectangle c2Pos = (Rectangle){centerX + 200, centerY, width, height};
+
     // Inicializa uma carta
     Card c1 = Card_Init(centerCardPos, cardSprites[0]);
     Card_SetScaleRatio(c1, 0.5f);
 
+    Card c2 = Card_Init(c2Pos, cardSprites[1]);
+    Card_SetScaleRatio(c2, 0.5f);
+
+    Lista cardsList = criaLista();
+
+    inserirFim(cardsList, c1);
+    inserirFim(cardsList, c2);
+
     // Tela
     while(!WindowShouldClose()){
         float deltaTime = GetFrameTime();
+
         Vector2 mousepos = GetMousePosition();
-        
-        if(IsKeyPressed(KEY_SPACE)) Card_MoveTo(c1, mousepos, 0.5f);
-        
-        if(Card_isGrabbed(c1, IsMouseButtonDown(MOUSE_BUTTON_LEFT))) Card_Maximize(c1, 0.5f);
-        else Card_Minimize(c1, 0.5f);
-        
-        Card_Update(c1, deltaTime);
-        
+        Vector2 mouseDelta = GetMouseDelta();
+
+        Essentials* e = &(Essentials){deltaTime, mousepos, mouseDelta};
+
+        percorrerLista(cardsList, percorrerCartas, e);
+
         BeginDrawing();
             ClearBackground(BLACK);
 
-            Card_Draw(c1);
+            percorrerLista(cardsList, runExtra, Card_Draw);
         EndDrawing();
     }
 

@@ -9,6 +9,8 @@
 #include <animation.h>
 
 typedef struct CardStr {
+    int id;
+
     Texture2D img;
     Animation anim;
 
@@ -31,6 +33,9 @@ typedef struct CardStr {
 Card Card_Init(Rectangle rect, Texture2D txr){
     CardStr* card = (CardStr*)malloc(sizeof(CardStr));
     
+    static int id = 0;
+
+    card->id = id;
     card->img = txr;
 
     card->anim = Animation_Init();
@@ -51,11 +56,17 @@ Card Card_Init(Rectangle rect, Texture2D txr){
     card->isMaximized = true;
     card->time = 0.0f;
 
+    id += 1;
+
     return card;
 }
 
 Rectangle Card_GetRect(Card card){
     return ((CardStr*)card)->rect;
+}
+
+int Card_GetId(Card card){
+    return ((CardStr*)card)->id;
 }
 
 bool Card_isHovered(Card card, Vector2 point){
@@ -166,14 +177,6 @@ void Card_Update(Card card, float deltaTime){
     
     Card_UpdatePos(card, deltaTime);
     Card_UpdateSize(card, deltaTime);
-
-    Vector2 point = GetMousePosition();
-    bool btnDown = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
-
-    Card_isHovered(card, point);
-    Card_isGrabbed(card, btnDown);
-
-    if(c->attached) Card_Move(card, GetMouseDelta());
 
     c->img.width = c->rect.width;
     c->img.height = c->rect.height;
