@@ -119,7 +119,7 @@ int main(){
 
         Essentials* e = &(Essentials){deltaTime, mousepos, mouseDelta, &grabbedCardId};
 
-        percorrerLista(cardsList, percorrerCartas, e);
+        percorrerListaReverso(cardsList, percorrerCartas, e);
 
         if(grabbedCardId != lastCardId && grabbedCardId != -1){
             lastCardId = grabbedCardId;
