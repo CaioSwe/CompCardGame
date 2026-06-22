@@ -18,12 +18,14 @@ typedef struct Essentials{
     float deltaTime;
     Vector2 mousePos;
     Vector2 mouseDelta;
+
+    int* grabbedCardId;
 } Essentials;
 
 static void percorrerCartas(Card c, Item extra){
     Essentials* e = (Essentials*)extra;
 
-    static int grabbedCardId = -1;
+    int grabbedCardId = *e->grabbedCardId;
     int id = Card_GetId(c);
 
     bool mbDown = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
@@ -42,6 +44,8 @@ static void percorrerCartas(Card c, Item extra){
     else if(grabbedCardId != id) Card_Minimize(c, 0.5f);
 
     Card_Update(c, e->deltaTime);
+
+    *e->grabbedCardId = grabbedCardId;
 }
 
 #pragma endregion "FuncoesUteis"
@@ -103,6 +107,9 @@ int main(){
     inserirFim(cardsList, c1);
     inserirFim(cardsList, c2);
 
+    int grabbedCardId = -1;
+    int lastCardId = -1;
+
     // Tela
     while(!WindowShouldClose()){
         float deltaTime = GetFrameTime();
@@ -110,9 +117,16 @@ int main(){
         Vector2 mousepos = GetMousePosition();
         Vector2 mouseDelta = GetMouseDelta();
 
-        Essentials* e = &(Essentials){deltaTime, mousepos, mouseDelta};
+        Essentials* e = &(Essentials){deltaTime, mousepos, mouseDelta, &grabbedCardId};
 
         percorrerLista(cardsList, percorrerCartas, e);
+
+        if(grabbedCardId != lastCardId && grabbedCardId != -1){
+            lastCardId = grabbedCardId;
+
+            Card c = remover(cardsList, compararCartas, &grabbedCardId);
+            inserirFim(cardsList, c);
+        }
 
         BeginDrawing();
             ClearBackground(BLACK);

@@ -4,6 +4,8 @@
 #include <raylib.h>
 #include <stdbool.h>
 
+#include <types.h>
+
 typedef void* Card;
 
 /**
@@ -41,5 +43,7 @@ void Card_Update(Card card, float deltaTime);
 void Card_Draw(Card card);
 
 Texture2D Card_free(Card card);
+
+bool compararCartas(Card card, Item id);
 
 #endif

@@ -205,3 +205,10 @@ Texture2D Card_free(Card card){
 
     return txr;
 }
+
+bool compararCartas(Card card, Item id){
+    CardStr* c = (CardStr*)card;
+    int cId = *(int*)id;
+
+    return (c->id == cId);
+}
