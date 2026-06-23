@@ -13,8 +13,9 @@ typedef struct CardStr {
 
     Texture2D img;
     Animation anim;
-
+    
     Rectangle rect;
+    Vector2 lastPosition;
 
     float scaleRatio;
 
@@ -43,6 +44,7 @@ Card Card_Init(Rectangle rect, Texture2D txr){
     Animation_AddScaleAnimation(card->anim, rect, easeOutBack);
 
     card->rect = rect;
+    card->lastPosition = (Vector2){0, 0};
     card->scaleRatio = 1.0f;
 
     card->hovered = false;
@@ -174,12 +176,31 @@ static void Card_UpdateSize(Card card, float deltaTime){
 
 void Card_Update(Card card, float deltaTime){
     CardStr* c = (CardStr*)card;
-    
+
     Card_UpdatePos(card, deltaTime);
     Card_UpdateSize(card, deltaTime);
 
     c->img.width = c->rect.width;
     c->img.height = c->rect.height;
+}
+
+void Card_UpdateLastPosition(Card card){
+    CardStr* c = (CardStr*)card;
+
+    c->lastPosition = (Vector2){c->rect.x, c->rect.y};
+}
+
+Vector2 Card_GetPosition(Card card){
+    CardStr* c = ((CardStr*)card);
+    return (Vector2){c->rect.x, c->rect.y};
+}
+
+Vector2 Card_GetLastPosition(Card card){
+    return ((CardStr*)card)->lastPosition;
+}
+
+float Card_GetRotation(Card card){
+    return ((CardStr*)card)->rotation;
 }
 
 void Card_Draw(Card card){

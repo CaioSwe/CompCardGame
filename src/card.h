@@ -40,6 +40,14 @@ void Card_Maximize(Card card, float duration);
 
 void Card_Update(Card card, float deltaTime);
 
+void Card_UpdateLastPosition(Card card);
+
+Vector2 Card_GetPosition(Card card);
+
+Vector2 Card_GetLastPosition(Card card);
+
+float Card_GetRotation(Card card);
+
 void Card_Draw(Card card);
 
 Texture2D Card_free(Card card);

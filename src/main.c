@@ -10,6 +10,8 @@
 #include <fileHandler.h>
 #include <utils.h>
 
+#include <raymath.h>
+
 #include "card.h"
 
 #pragma region "FuncoesUteis"
@@ -44,6 +46,18 @@ static void percorrerCartas(Card c, Item extra){
     else if(grabbedCardId != id) Card_Minimize(c, 0.5f);
 
     Card_Update(c, e->deltaTime);
+
+    float rotation = Card_GetRotation(c);
+    
+    float max_card_rotation = 25.5f;
+    float targetRotation = Clamp((Vector2Subtract(Card_GetPosition(c), Card_GetLastPosition(c))).x * 1.2f, -max_card_rotation, max_card_rotation);
+    
+    if(fabs(targetRotation) > EPSILON){
+        rotation = lerp(rotation, targetRotation, 12.0f * e->deltaTime);
+        Card_SetRotation(c, rotation);
+    }
+
+    Card_UpdateLastPosition(c);
 
     *e->grabbedCardId = grabbedCardId;
 }
