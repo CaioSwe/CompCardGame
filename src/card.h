@@ -36,6 +36,8 @@ void Card_SetScaleRatio(Card card, float scaleRatio);
 
 void Card_Minimize(Card card, float duration);
 
+void Card_Medianize(Card card, float duration);
+
 void Card_Maximize(Card card, float duration);
 
 void Card_Update(Card card, float deltaTime);

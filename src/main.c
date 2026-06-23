@@ -22,11 +22,13 @@ typedef struct Essentials{
     Vector2 mouseDelta;
 
     int* grabbedCardId;
+    int* maxId;
 } Essentials;
 
 static void percorrerCartas(Card c, Item extra){
     Essentials* e = (Essentials*)extra;
 
+    int maxId = *e->maxId;
     int grabbedCardId = *e->grabbedCardId;
     int id = Card_GetId(c);
 
@@ -34,16 +36,19 @@ static void percorrerCartas(Card c, Item extra){
     if(!mbDown && grabbedCardId == id) grabbedCardId = -1;
     
     bool hovered = Card_isHovered(c, e->mousePos);
-    bool canGrab = (grabbedCardId == -1 || grabbedCardId == id);
+    bool canGrab = (grabbedCardId == -1 || grabbedCardId == id) && (maxId == -1 || maxId == id);
     bool isDragging = Card_isGrabbed(c, mbDown) && canGrab;
-
+    
     if(isDragging){
         grabbedCardId = id;
-
         Card_Move(c, e->mouseDelta);
-        Card_Maximize(c, 0.5f);
+        Card_Maximize(c, 0.3f);
     }
-    else if(grabbedCardId != id) Card_Minimize(c, 0.5f);
+    else if(canGrab && hovered){
+        maxId = id;
+        Card_Medianize(c, 0.3f);
+    }
+    else Card_Minimize(c, 0.3f);
 
     Card_Update(c, e->deltaTime);
 
@@ -52,13 +57,12 @@ static void percorrerCartas(Card c, Item extra){
     float max_card_rotation = 25.5f;
     float targetRotation = Clamp((Vector2Subtract(Card_GetPosition(c), Card_GetLastPosition(c))).x * 1.2f, -max_card_rotation, max_card_rotation);
     
-    if(fabs(targetRotation) > EPSILON){
-        rotation = lerp(rotation, targetRotation, 12.0f * e->deltaTime);
-        Card_SetRotation(c, rotation);
-    }
+    rotation = lerp(rotation, targetRotation, 12.0f * e->deltaTime);
+    Card_SetRotation(c, rotation);
 
     Card_UpdateLastPosition(c);
 
+    *e->maxId = maxId;
     *e->grabbedCardId = grabbedCardId;
 }
 
@@ -111,10 +115,10 @@ int main(){
 
     // Inicializa uma carta
     Card c1 = Card_Init(centerCardPos, cardSprites[0]);
-    Card_SetScaleRatio(c1, 0.5f);
+    Card_SetScaleRatio(c1, 0.80f);
 
     Card c2 = Card_Init(c2Pos, cardSprites[1]);
-    Card_SetScaleRatio(c2, 0.5f);
+    Card_SetScaleRatio(c2, 0.80f);
 
     Lista cardsList = criaLista();
 
@@ -123,6 +127,7 @@ int main(){
 
     int grabbedCardId = -1;
     int lastCardId = -1;
+    int maxId = -1;
 
     // Tela
     while(!WindowShouldClose()){
@@ -131,7 +136,8 @@ int main(){
         Vector2 mousepos = GetMousePosition();
         Vector2 mouseDelta = GetMouseDelta();
 
-        Essentials* e = &(Essentials){deltaTime, mousepos, mouseDelta, &grabbedCardId};
+        Essentials* e = &(Essentials){deltaTime, mousepos, mouseDelta, &grabbedCardId, &maxId};
+        maxId = -1;
 
         percorrerListaReverso(cardsList, percorrerCartas, e);
 

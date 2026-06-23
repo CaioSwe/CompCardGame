@@ -25,7 +25,7 @@ typedef struct CardStr {
 
     float rotation;
 
-    bool isMaximized;
+    int scaleType;
     float time;
 
     Color cor;
@@ -55,7 +55,7 @@ Card Card_Init(Rectangle rect, Texture2D txr){
 
     card->cor = WHITE;
 
-    card->isMaximized = true;
+    card->scaleType = -1;
     card->time = 0.0f;
 
     id += 1;
@@ -129,23 +129,40 @@ void Card_SetScaleRatio(Card card, float scaleRatio){
 void Card_Minimize(Card card, float duration){
     CardStr* c = (CardStr*)card;
     
-    if(!c->isMaximized) return;
-    c->isMaximized = false;
+    if(c->scaleType == 0) return;
+    
+    if(Animation_ScaleIsAnimating(c->anim)) Animation_EndResize(c->anim);
+    c->rect = Animation_GetScale(c->anim);
+    
+    Animation_Resize(c->anim, c->scaleRatio, duration);
+    
+    c->scaleType = 0;
+}
+
+void Card_Medianize(Card card, float duration){
+    CardStr* c = (CardStr*)card;
+
+    if(c->scaleType == 1) return;
 
     if(Animation_ScaleIsAnimating(c->anim)) Animation_EndResize(c->anim);
     c->rect = Animation_GetScale(c->anim);
-    Animation_Resize(c->anim, c->scaleRatio, duration);
+    
+    Animation_Resize(c->anim, ((1.0f - c->scaleRatio) * 0.5f) + c->scaleRatio, duration);
+    
+    c->scaleType = 1;
 }
 
 void Card_Maximize(Card card, float duration){
     CardStr* c = (CardStr*)card;
 
-    if(c->isMaximized) return;
-    c->isMaximized = true;
+    if(c->scaleType == 2) return;
 
     if(Animation_ScaleIsAnimating(c->anim)) Animation_EndResize(c->anim);
     c->rect = Animation_GetScale(c->anim);
-    Animation_Resize(c->anim, 1.0f/c->scaleRatio, duration);
+
+    Animation_Resize(c->anim, 1.0f, duration);
+    
+    c->scaleType = 2;
 }
 
 static void Card_UpdatePos(Card card, float deltaTime){
@@ -170,8 +187,6 @@ static void Card_UpdateSize(Card card, float deltaTime){
     
     Rectangle scale = Animation_GetScale(c->anim);
     c->rect = scale;
-    
-    printf("\n Scale = %.1f", scale.width);
 }
 
 void Card_Update(Card card, float deltaTime){
