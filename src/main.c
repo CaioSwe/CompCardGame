@@ -77,9 +77,13 @@ int main(){
     // Pega o caminho da aplicação (para usar nos paths futuros)
     _chdir(GetApplicationDirectory());
 
+    // Background
+    ImageObject background = Image_Init("./sprites/background.png");
+    Image_FitToScreenSize(background);
+
     // Tamanho de cada carta
     float width = 120;
-    float height = 200;
+    float height = 180;
     
     // Número de cartas a serem geradas
     // int numCards = 8;
@@ -97,7 +101,7 @@ int main(){
     Texture2D* cardSprites = (Texture2D*)malloc(sizeof(Texture2D) * nFiles);
 
     // Carrega a textura das cartas
-    for(int i = 0; i < 5; i++){
+    for(int i = 0; i < nFiles; i++){
         cardSprites[i] = LoadTexture(TextFormat("%s%s", path, nomes[i]));
         printf("\nCard Loaded: %s", nomes[i]);
     }
@@ -109,21 +113,21 @@ int main(){
     // Coloca a carta no centro da tela
     float centerX = CENTER.x - width/2;
     float centerY = CENTER.y - height/2;
-    Rectangle centerCardPos = (Rectangle){centerX, centerY, width, height};
+    Rectangle centerCardPos = (Rectangle){centerX - 400, centerY + 100, width, height};
     
     Rectangle c2Pos = (Rectangle){centerX + 200, centerY, width, height};
 
-    // Inicializa uma carta
-    Card c1 = Card_Init(centerCardPos, cardSprites[0]);
-    Card_SetScaleRatio(c1, 0.80f);
-
-    Card c2 = Card_Init(c2Pos, cardSprites[1]);
-    Card_SetScaleRatio(c2, 0.80f);
-
     Lista cardsList = criaLista();
 
-    inserirFim(cardsList, c1);
-    inserirFim(cardsList, c2);
+    for(int i = 0; i < nFiles; i++){
+        static int delta = 60;
+        Card c = Card_Init(centerCardPos, cardSprites[i]);
+        Card_SetScaleRatio(c, 0.80f);
+
+        inserirFim(cardsList, c);
+
+        centerCardPos.x += delta;
+    }
 
     int grabbedCardId = -1;
     int lastCardId = -1;
@@ -150,6 +154,8 @@ int main(){
 
         BeginDrawing();
             ClearBackground(BLACK);
+            Image_Draw(background);
+            DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, (Color){0, 0, 0, 170});
 
             percorrerLista(cardsList, runExtra, Card_Draw);
         EndDrawing();
