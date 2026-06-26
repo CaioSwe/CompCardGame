@@ -6,8 +6,8 @@
                 "${workspaceFolder}/**",
                 "C:/raylib/raylib/src/**",
                 "C:/MinGW/include/**",
-                "C:/Users/caios/Desktop/Códigos/EXTERNO - Projetos/Bibliotecas/data_structures",
-                "C:/Users/caios/Desktop/Códigos/EXTERNO - Projetos/Bibliotecas/libraries"
+                "../Bibliotecas/data_structures",
+                "../Bibliotecas/libraries"
             ],
             "defines": [
                 "_DEBUG",

@@ -155,7 +155,7 @@ int main(){
         BeginDrawing();
             ClearBackground(BLACK);
             Image_Draw(background);
-            DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, (Color){0, 0, 0, 170});
+            DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, (Color){0, 0, 0, 80});
 
             percorrerLista(cardsList, runExtra, Card_Draw);
         EndDrawing();
