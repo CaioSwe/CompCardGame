@@ -44,6 +44,8 @@ void Card_Update(Card card, float deltaTime);
 
 void Card_UpdateLastPosition(Card card);
 
+bool Card_isCollidingRec(Card card, Rectangle rec);
+
 Vector2 Card_GetPosition(Card card);
 
 Vector2 Card_GetLastPosition(Card card);

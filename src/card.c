@@ -102,6 +102,14 @@ void Card_Move(Card card, Vector2 delta){
     c->rect.y += delta.y;
 }
 
+bool Card_isCollidingRec(Card card, Rectangle rec){
+    CardStr* c = (CardStr*)card;
+
+    Rectangle cRec = {c->rect.x, c->rect.y, c->img.width, c->img.height};
+
+    return CheckCollisionRecs(cRec, rec);
+}
+
 void Card_MoveTo(Card card, Vector2 finalPoint, float duration){
     CardStr* c = (CardStr*)card;
 

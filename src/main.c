@@ -25,6 +25,10 @@ typedef struct Essentials{
     int* maxId;
 } Essentials;
 
+typedef struct BoardEssentials{
+    Rectangle boardRec;
+} BoardEssentials;
+
 static void percorrerCartas(Card c, Item extra){
     Essentials* e = (Essentials*)extra;
 
@@ -64,6 +68,17 @@ static void percorrerCartas(Card c, Item extra){
 
     *e->maxId = maxId;
     *e->grabbedCardId = grabbedCardId;
+}
+
+static void cartasBoard(Card c, Item extra){
+    BoardEssentials* be = (BoardEssentials*)extra;
+
+    bool col = Card_isCollidingRec(c, be->boardRec);
+
+    if(col){
+        Card_SetScaleRatio(c, 0.5f);
+    }
+    else Card_SetScaleRatio(c, 0.8f);
 }
 
 #pragma endregion "FuncoesUteis"
@@ -113,9 +128,9 @@ int main(){
     // Coloca a carta no centro da tela
     float centerX = CENTER.x - width/2;
     float centerY = CENTER.y - height/2;
-    Rectangle centerCardPos = (Rectangle){centerX - 400, centerY + 100, width, height};
-    
-    Rectangle c2Pos = (Rectangle){centerX + 200, centerY, width, height};
+    Rectangle centerCardPos = (Rectangle){centerX - 350, centerY + 280, width, height};
+
+    Rectangle boardRec = (Rectangle){CENTER.x - ((SCREEN_WIDTH * 0.75f) / 2), CENTER.y - ((SCREEN_HEIGHT * 0.6f) * 0.66f), SCREEN_WIDTH * 0.75f, SCREEN_HEIGHT * 0.6f};
 
     Lista cardsList = criaLista();
 
@@ -145,6 +160,10 @@ int main(){
 
         percorrerListaReverso(cardsList, percorrerCartas, e);
 
+        BoardEssentials* be = &(BoardEssentials){boardRec};
+
+        percorrerListaReverso(cardsList, cartasBoard, be);
+
         if(grabbedCardId != lastCardId && grabbedCardId != -1){
             lastCardId = grabbedCardId;
 
@@ -156,6 +175,8 @@ int main(){
             ClearBackground(BLACK);
             Image_Draw(background);
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, (Color){0, 0, 0, 80});
+
+            DrawRectangleRec(boardRec, (Color){0, 0, 0, 100});
 
             percorrerLista(cardsList, runExtra, Card_Draw);
         EndDrawing();
