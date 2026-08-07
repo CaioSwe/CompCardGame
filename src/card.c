@@ -25,7 +25,7 @@ typedef struct CardStr {
 
     float rotation;
 
-    int scaleType;
+    CurrentScale scaleType;
     float time;
 
     Color cor;
@@ -44,7 +44,7 @@ Card Card_Init(Rectangle rect, Texture2D txr){
     Animation_AddScaleAnimation(card->anim, rect, easeOutBack);
 
     card->rect = rect;
-    card->lastPosition = (Vector2){0, 0};
+    card->lastPosition = (Vector2){rect.x, rect.y};
     card->scaleRatio = 1.0f;
 
     card->hovered = false;
@@ -55,7 +55,7 @@ Card Card_Init(Rectangle rect, Texture2D txr){
 
     card->cor = WHITE;
 
-    card->scaleType = -1;
+    card->scaleType = MAXIMIZED;
     card->time = 0.0f;
 
     id += 1;
@@ -126,43 +126,43 @@ void Card_SetScaleRatio(Card card, float scaleRatio){
     ((CardStr*)card)->scaleRatio = scaleRatio;
 }
 
-void Card_Minimize(Card card, float duration){
+void Card_SetScale(Card card, float scale, float duration){
     CardStr* c = (CardStr*)card;
-    
-    if(c->scaleType == 0) return;
-    
+
     if(Animation_ScaleIsAnimating(c->anim)) Animation_EndResize(c->anim);
     c->rect = Animation_GetScale(c->anim);
     
-    Animation_Resize(c->anim, c->scaleRatio, duration);
+    Animation_Resize(c->anim, scale, duration);
+}
+
+void Card_Minimize(Card card, float duration){
+    CardStr* c = (CardStr*)card;
     
-    c->scaleType = 0;
+    if(c->scaleType == MINIMIZED) return;
+    
+    Card_SetScale(card, c->scaleRatio, duration);
+    
+    c->scaleType = MINIMIZED;
 }
 
 void Card_Medianize(Card card, float duration){
     CardStr* c = (CardStr*)card;
 
-    if(c->scaleType == 1) return;
+    if(c->scaleType == MEDIANIZED) return;
 
-    if(Animation_ScaleIsAnimating(c->anim)) Animation_EndResize(c->anim);
-    c->rect = Animation_GetScale(c->anim);
+    Card_SetScale(card, ((1.0f - c->scaleRatio) * 0.5f) + c->scaleRatio, duration);
     
-    Animation_Resize(c->anim, ((1.0f - c->scaleRatio) * 0.5f) + c->scaleRatio, duration);
-    
-    c->scaleType = 1;
+    c->scaleType = MEDIANIZED;
 }
 
 void Card_Maximize(Card card, float duration){
     CardStr* c = (CardStr*)card;
 
-    if(c->scaleType == 2) return;
+    if(c->scaleType == MAXIMIZED) return;
 
-    if(Animation_ScaleIsAnimating(c->anim)) Animation_EndResize(c->anim);
-    c->rect = Animation_GetScale(c->anim);
-
-    Animation_Resize(c->anim, 1.0f, duration);
+    Card_SetScale(card, 1.0f, duration);
     
-    c->scaleType = 2;
+    c->scaleType = MAXIMIZED;
 }
 
 static void Card_UpdatePos(Card card, float deltaTime){
@@ -195,8 +195,8 @@ void Card_Update(Card card, float deltaTime){
     Card_UpdatePos(card, deltaTime);
     Card_UpdateSize(card, deltaTime);
 
-    c->img.width = c->rect.width;
-    c->img.height = c->rect.height;
+    // c->img.width = c->rect.width;
+    // c->img.height = c->rect.height;
 }
 
 void Card_UpdateLastPosition(Card card){
@@ -221,14 +221,14 @@ float Card_GetRotation(Card card){
 void Card_Draw(Card card){
     CardStr* c = (CardStr*)card;
 
-    Rectangle source = (Rectangle){0, 0, c->rect.width, c->rect.height};
+    Rectangle source = (Rectangle){0, 0, c->img.width, c->img.height};
     Rectangle dest = (Rectangle){
-        c->rect.x + c->img.width / 2.0f,
-        c->rect.y + c->img.height / 2.0f,
-        c->img.width,
-        c->img.height
+        c->rect.x + c->rect.width / 2.0f,
+        c->rect.y + c->rect.height / 2.0f,
+        c->rect.width,
+        c->rect.height
     };
-    Vector2 origin = (Vector2){c->img.width / 2.0f, c->img.height / 2.0f};
+    Vector2 origin = (Vector2){c->rect.width / 2.0f, c->rect.height / 2.0f};
 
     DrawTexturePro(c->img, source, dest, origin, c->rotation, WHITE);
 }

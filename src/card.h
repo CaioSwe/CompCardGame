@@ -8,6 +8,12 @@
 
 typedef void* Card;
 
+typedef enum {
+    MINIMIZED = 0,
+    MEDIANIZED = 1,
+    MAXIMIZED = 2
+} CurrentScale;
+
 /**
  * @brief Inicializa uma estrutura de Card (carta).
  * @param rect Retangulo de dimensoes para a carta.
@@ -33,6 +39,8 @@ void Card_MoveTo(Card card, Vector2 finalPoint, float duration);
 void Card_Wiggle(Card card, float deltaTime);
 
 void Card_SetScaleRatio(Card card, float scaleRatio);
+
+void Card_SetScale(Card card, float scale, float duration);
 
 void Card_Minimize(Card card, float duration);
 

@@ -123,6 +123,7 @@ int main(){
         static int delta = 60;
         Card c = Card_Init(centerCardPos, cardSprites[i]);
         Card_SetScaleRatio(c, 0.80f);
+        Card_SetScale(c, 0.80f, 0.0f);
 
         inserirFim(cardsList, c);
 
@@ -163,41 +164,3 @@ int main(){
 
     return 0;
 }
-
-/*
-
-        percorrerLista(listaAllCards, atualizarCarta);
-
-        percorrerLista(stack, freeStoreLista);
-        limparLista(stack);
-
-        percorrerLista(stack2, freeStoreLista2);
-        limparLista(stack2);
-
-        if(Button_IsPressed(refresh, mousepos)){
-            RefreshAllCards();
-        }
-
-        BeginDrawing();
-            ClearBackground(BLACK);
-
-            Image_Draw(background);
-
-            Button_Draw(refresh, WHITE, WHITE, WHITE, RED);
-
-            DrawText(TextFormat("%d", listaTamanho(listaCardsDealed)), 0, 0, 20, WHITE);
-            DrawText(TextFormat("%d", listaTamanho(listaCardsStored)), 0, 25, 20, WHITE);
-
-            DrawRectangleLinesEx(handZone, 10.0f, (Color){100, 100, 100, 30});
-            imprimirLista(listaAllCards, imprimirCard);
-
-            DrawRectangleRec(deckPos, WHITE);
-        EndDrawing();
-    }
-
-    limparLista(listaAllCards);
-
-    return 0;
-}
-
-*/
